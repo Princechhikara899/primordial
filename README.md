@@ -4,7 +4,7 @@
 
 **Primordial** is a social accountability platform that helps people stay consistent with their personal goals by turning goal tracking into a shared experience.
 
-Users can create challenges around goals such as **fitness, studying, reading, coding, or personal habits**, invite friends or join public communities, check in daily, maintain streaks, compete on leaderboards, and motivate each other through real-time group interactions.
+Users can create challenges around goals such as **fitness, studying, reading, coding, or personal habits**, invite friends or join public communities, check in daily, maintain streaks, compete on leaderboards and motivate each other through real-time group interactions.
 
 ---
 
