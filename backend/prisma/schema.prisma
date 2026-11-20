@@ -1,0 +1,139 @@
+// Primordial - Goal Accountability Platform
+// PostgreSQL Database Schema with Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -------------------------------------------------------------
+// Model 1: User
+// Represents registered users on Primordial
+// -------------------------------------------------------------
+model User {
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  password       String   // Hashed using bcrypt
+  streakFreezes  Int      @default(2) // Available inventory of streak freezes
+  createdAt      DateTime @default(now())
+
+  // Relations
+  createdChallenges Challenge[]    @relation("ChallengeCreator")
+  memberships       Membership[]
+  checkIns          CheckIn[]
+  streakFreezesUsed StreakFreeze[]
+  badges            Badge[]
+
+  @@map("users")
+}
+
+// -------------------------------------------------------------
+// Model 2: Challenge
+// Represents a goal/streak challenge created by a user
+// -------------------------------------------------------------
+model Challenge {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  duration    Int      // Duration in days (e.g., 7, 21, 30)
+  visibility  String   @default("PUBLIC") // "PUBLIC" or "PRIVATE"
+  metricType  String   @default("STEPS")  // "STEPS", "STUDY_MINUTES", "READING_MINUTES", "WORKOUT_COUNT", "DAILY_CHECKIN"
+  inviteCode  String?  @unique            // Required for private challenges
+  creatorId   Int
+  createdAt   DateTime @default(now())
+
+  // Relations
+  creator       User           @relation("ChallengeCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  memberships   Membership[]
+  checkIns      CheckIn[]
+  streakFreezes StreakFreeze[]
+
+  @@map("challenges")
+}
+
+// -------------------------------------------------------------
+// Model 3: Membership
+// Connects Users with Challenges (Many-to-Many via Join Table)
+// -------------------------------------------------------------
+model Membership {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  challengeId Int
+  joinedAt    DateTime @default(now())
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  // Composite unique constraint: Prevents a user from joining the same challenge multiple times
+  @@unique([userId, challengeId])
+  @@map("memberships")
+}
+
+// -------------------------------------------------------------
+// Model 4: CheckIn
+// Daily progress submission by a participant in a challenge
+// -------------------------------------------------------------
+model CheckIn {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  challengeId Int
+  date        DateTime // Stored normalized to midnight UTC (YYYY-MM-DD)
+  metricValue Float    @default(1) // Recorded numeric activity (e.g. 10000 steps, 45 study mins)
+  note        String?  // Optional progress note
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  // Composite unique constraint: Prevents duplicate daily check-ins for the same user on the same challenge
+  @@unique([userId, challengeId, date])
+  @@map("checkins")
+}
+
+// -------------------------------------------------------------
+// Model 5: StreakFreeze
+// Tracks when a user protects a missed day with a streak freeze
+// -------------------------------------------------------------
+model StreakFreeze {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  challengeId Int
+  date        DateTime // Normalized to midnight UTC (YYYY-MM-DD) of the protected day
+  usedAt      DateTime @default(now())
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  // Composite unique constraint: Prevents using multiple freezes for the same missed day
+  @@unique([userId, challengeId, date])
+  @@map("streak_freezes")
+}
+
+// -------------------------------------------------------------
+// Model 6: Badge
+// Achievement badges earned by users based on milestones
+// -------------------------------------------------------------
+model Badge {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  badgeType   String   // e.g., "FIRST_STEP", "STREAK_3", "STREAK_7", "STREAK_30", etc.
+  title       String
+  description String
+  icon        String   // Icon key or emoji
+  earnedAt    DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Composite unique constraint: Prevents duplicate awards of the same badge to a user
+  @@unique([userId, badgeType])
+  @@map("badges")
+}
