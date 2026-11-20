@@ -1,0 +1,19 @@
+// backend/src/routes/authRoutes.js
+// Authentication Routes
+
+const express = require('express');
+const router = express.Router();
+
+const { register, login, logout, getMe } = require('../controllers/authController');
+const { requireAuth } = require('../middleware/authMiddleware');
+const { validateRegistration, validateLogin } = require('../middleware/validationMiddleware');
+
+// Public routes
+router.post('/register', validateRegistration, register);
+router.post('/login', validateLogin, login);
+
+// Protected routes (require active session)
+router.post('/logout', requireAuth, logout);
+router.get('/me', requireAuth, getMe);
+
+module.exports = router;
