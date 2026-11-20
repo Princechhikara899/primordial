@@ -1,0 +1,282 @@
+{
+  "info": {
+    "name": "Primordial API Collection (Team React)",
+    "description": "Complete REST API endpoints for Primordial - Full-Stack Goal Accountability Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "health"]
+        }
+      }
+    },
+    {
+      "name": "2. Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Prince\",\n  \"email\": \"prince@primordial.dev\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "http://localhost:5000/api/auth/register", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"prince@primordial.dev\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "http://localhost:5000/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Current Logged-in User (/me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/auth/me", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "me"] }
+          }
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/auth/logout", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Challenges",
+      "item": [
+        {
+          "name": "Get Public Challenges",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/challenges", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges"] }
+          }
+        },
+        {
+          "name": "Create Public Challenge",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"30 Days of Coding\",\n  \"description\": \"Daily algorithmic problem solving and web development.\",\n  \"duration\": 30,\n  \"visibility\": \"PUBLIC\"\n}"
+            },
+            "url": { "raw": "http://localhost:5000/api/challenges", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges"] }
+          }
+        },
+        {
+          "name": "Create Private Challenge (Auto Invite Code)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"7 Days of Early Waking\",\n  \"description\": \"Wake up at 6 AM every day.\",\n  \"duration\": 7,\n  \"visibility\": \"PRIVATE\"\n}"
+            },
+            "url": { "raw": "http://localhost:5000/api/challenges", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges"] }
+          }
+        },
+        {
+          "name": "Get Challenge Details by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/challenges/1", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1"] }
+          }
+        },
+        {
+          "name": "Update Challenge (Creator Only)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"30 Days of Modern Coding & DevOps\"\n}"
+            },
+            "url": { "raw": "http://localhost:5000/api/challenges/1", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1"] }
+          }
+        },
+        {
+          "name": "Delete Challenge (Creator Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/challenges/1", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Memberships",
+      "item": [
+        {
+          "name": "Join Public Challenge",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/challenges/1/join", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "join"] }
+          }
+        },
+        {
+          "name": "Join Private Challenge via Invite Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inviteCode\": \"EARLY6AM\"\n}"
+            },
+            "url": { "raw": "http://localhost:5000/api/challenges/join-private", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "join-private"] }
+          }
+        },
+        {
+          "name": "Leave Challenge",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/challenges/1/leave", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "leave"] }
+          }
+        },
+        {
+          "name": "Get Challenge Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/challenges/1/members", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "members"] }
+          }
+        },
+        {
+          "name": "Get User Joined Challenges",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/users/me/challenges", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "users", "me", "challenges"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Check-ins & Streaks",
+      "item": [
+        {
+          "name": "Submit Daily Check-in",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Completed 2 hours of React & Express practice today!\"\n}"
+            },
+            "url": { "raw": "http://localhost:5000/api/challenges/1/checkins", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "checkins"] }
+          }
+        },
+        {
+          "name": "Get Challenge Check-ins Feed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/challenges/1/checkins", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "checkins"] }
+          }
+        },
+        {
+          "name": "Get Personal Check-in History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/users/me/checkins", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "users", "me", "checkins"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Leaderboard",
+      "item": [
+        {
+          "name": "Get Challenge Leaderboard (SQL DENSE_RANK)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/challenges/1/leaderboard", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "leaderboard"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Dashboard & History",
+      "item": [
+        {
+          "name": "Get User Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/users/me/dashboard", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "users", "me", "dashboard"] }
+          }
+        },
+        {
+          "name": "Get User Challenge History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/users/me/history", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "users", "me", "history"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Group Chat (MongoDB)",
+      "item": [
+        {
+          "name": "Send Message to Challenge Chat",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Hey everyone! Ready for another consistent day!\"\n}"
+            },
+            "url": { "raw": "http://localhost:5000/api/challenges/1/messages", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "messages"] }
+          }
+        },
+        {
+          "name": "Get Challenge Messages (MongoDB)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/challenges/1/messages", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "messages"] }
+          }
+        },
+        {
+          "name": "Delete Own Message (MongoDB)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/api/messages/REPLACE_WITH_MONGO_ID", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "messages", "REPLACE_WITH_MONGO_ID"] }
+          }
+        }
+      ]
+    }
+  ]
+}
