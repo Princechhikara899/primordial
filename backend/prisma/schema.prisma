@@ -77,7 +77,7 @@ model Membership {
 
 // -------------------------------------------------------------
 // Model 4: CheckIn
-// Daily progress submission by a participant in a challenge
+// Daily progress submission by a participant in a challenge (Module 3: Check-ins & Streaks)
 // -------------------------------------------------------------
 model CheckIn {
   id          Int      @id @default(autoincrement())
@@ -99,7 +99,7 @@ model CheckIn {
 
 // -------------------------------------------------------------
 // Model 5: StreakFreeze
-// Tracks when a user protects a missed day with a streak freeze
+// Tracks when a user protects a missed day with a streak freeze (Module 3: Streak Freezes)
 // -------------------------------------------------------------
 model StreakFreeze {
   id          Int      @id @default(autoincrement())
