@@ -9,6 +9,7 @@ const { getUserCheckIns } = require('../controllers/checkinController');
 const {
   getDashboardStats,
   getUserHistory,
+  getUserBadges,
 } = require('../controllers/dashboardController');
 const { requireAuth } = require('../middleware/authMiddleware');
 
@@ -26,5 +27,8 @@ router.get('/me/challenges', getUserJoinedChallenges);
 
 // GET /api/users/me/checkins - Check-in history for current user
 router.get('/me/checkins', getUserCheckIns);
+
+// GET /api/users/me/badges - Earned milestone achievement badges
+router.get('/me/badges', getUserBadges);
 
 module.exports = router;

@@ -345,8 +345,69 @@ async function runTests() {
     const deleteMsgRes = await request('DELETE', `/api/messages/${sentMsgId}`);
     assert(deleteMsgRes.status === 200, 'Deletes own message from MongoDB');
 
+    // -----------------------------------------------------------------
+    // TEST GROUP 10: Security, Private Challenge IDOR & Chat Cleanup
+    // -----------------------------------------------------------------
+    console.log('\n--- Test Group 10: Security, IDOR Protection & Cleanup ---');
+
+    // 1. Create a non-member third user to test unauthorized access to private challenge
+    const thirdUserEmail = `third_${Date.now()}@example.com`;
+    await request('POST', '/api/auth/register', {
+      name: 'Third Observer',
+      email: thirdUserEmail,
+      password: 'password123',
+    });
+
+    // 2. Non-member access to private challenge details should be 403 Forbidden
+    const unauthDetails = await request('GET', `/api/challenges/${privateChallengeId}`);
+    assert(unauthDetails.status === 403, 'Non-member blocked from private challenge details with 403 Forbidden');
+
+    // 3. Non-member access to private leaderboard should be 403 Forbidden
+    const unauthLeaderboard = await request('GET', `/api/challenges/${privateChallengeId}/leaderboard`);
+    assert(unauthLeaderboard.status === 403, 'Non-member blocked from private challenge leaderboard with 403 Forbidden');
+
+    // 4. Non-member access to private challenge members list should be 403 Forbidden
+    const unauthMembers = await request('GET', `/api/challenges/${privateChallengeId}/members`);
+    assert(unauthMembers.status === 403, 'Non-member blocked from private challenge members with 403 Forbidden');
+
+    // 5. Non-member access to private challenge check-ins should be 403 Forbidden
+    const unauthCheckins = await request('GET', `/api/challenges/${privateChallengeId}/checkins`);
+    assert(unauthCheckins.status === 403, 'Non-member blocked from private challenge check-ins with 403 Forbidden');
+
+    // 6. Invalid MongoDB ObjectId should return 400 Bad Request, NOT 500 error
+    const badIdRes = await request('DELETE', '/api/messages/invalid-id-format');
+    assert(badIdRes.status === 400, 'Invalid MongoDB message ID returns clean 400 Bad Request');
+
+    // 7. Verify milestone achievement badges endpoint
+    const badgesRes = await request('GET', '/api/users/me/badges');
+    assert(badgesRes.status === 200, 'User badges endpoint returns 200 OK');
+    assert(Array.isArray(badgesRes.body.badges), 'Badges returned as array');
+
+    // 8. Verify challenge deletion cascades to MongoDB chat messages
+    // Send a message to createdChallengeId, then delete challenge
+    const cleanupChallenge = await request('POST', '/api/challenges', {
+      title: 'Cleanup Test Challenge',
+      description: 'Test challenge to verify MongoDB message deletion cleanup',
+      duration: 7,
+      visibility: 'PUBLIC',
+    });
+    const cleanupId = cleanupChallenge.body.challenge.id;
+
+    await request('POST', `/api/challenges/${cleanupId}/messages`, {
+      message: 'This message should be cleaned up from MongoDB on challenge delete',
+    });
+
+    // Delete the challenge
+    const deleteChallengeRes = await request('DELETE', `/api/challenges/${cleanupId}`);
+    assert(deleteChallengeRes.status === 200, 'Challenge deleted successfully by creator');
+
+    // Verify messages in MongoDB for this challengeId are 0
+    const Message = require('../src/models/messageModel');
+    const remainingMsgs = await Message.countDocuments({ challengeId: cleanupId });
+    assert(remainingMsgs === 0, 'Associated MongoDB messages wiped cleanly on challenge deletion');
+
     console.log('\n======================================================');
-    console.log('🎉 ALL 9 TEST SUITES PASSED FLAWLESSLY (100% SUCCESS)');
+    console.log('🎉 ALL 10 TEST SUITES PASSED FLAWLESSLY (100% SUCCESS)');
     console.log('======================================================\n');
   } catch (error) {
     console.error('\n❌ Test execution failed:', error);

@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [stats, setStats] = useState(null);
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -133,7 +133,7 @@ export default function DashboardPage() {
         loading: false,
         msg: res.message || 'Streak Freeze applied successfully!',
       }));
-      await fetchDashboardData();
+      await Promise.all([fetchDashboardData(), refreshUser()]);
       setTimeout(() => {
         setFreezeModal({ open: false, challengeId: '', date: '', loading: false, msg: '' });
       }, 2000);
@@ -407,7 +407,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
               Protect one missed day from breaking your streak. You currently have <strong>{availableFreezes}</strong> freeze(s) left.
             </p>
 

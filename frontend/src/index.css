@@ -14,6 +14,7 @@
   --border: #e2e8f0;
   --text-main: #0f172a;
   --text-muted: #64748b;
+  --text-secondary: #64748b;
   --success: #10b981;
   --success-light: #d1fae5;
   --error: #ef4444;
@@ -2398,4 +2399,56 @@ button:disabled {
   .stats-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* -------------------------------------------------------------------------
+   Badges & Freeze Timeline Extensions
+------------------------------------------------------------------------- */
+.badges-grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.badge-pill-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.85rem;
+}
+
+.badge-emoji-large {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.badge-pill-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-pill-text strong {
+  font-size: 0.875rem;
+  color: var(--text-main);
+}
+
+.badge-pill-text span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.empty-badge-box {
+  background-color: var(--surface-alt);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.row-freeze {
+  background-color: #f0f9ff;
 }

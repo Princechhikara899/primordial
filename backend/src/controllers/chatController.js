@@ -1,6 +1,7 @@
 // backend/src/controllers/chatController.js
 // Group Chat Controller (MongoDB)
 
+const mongoose = require('mongoose');
 const Message = require('../models/messageModel');
 const prisma = require('../config/prisma');
 
@@ -118,6 +119,13 @@ const getMessages = async (req, res, next) => {
 const deleteMessage = async (req, res, next) => {
   try {
     const { messageId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(messageId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid message ID format.',
+      });
+    }
 
     // 1. Find message in MongoDB
     const messageDoc = await Message.findById(messageId);

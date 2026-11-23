@@ -3,6 +3,7 @@
 
 const crypto = require('crypto');
 const prisma = require('../config/prisma');
+const Message = require('../models/messageModel');
 
 /**
  * Helper to generate a friendly 8-character unique alphanumeric invite code
@@ -29,7 +30,7 @@ const createChallenge = async (req, res, next) => {
           description: description.trim(),
           duration: parseInt(duration, 10),
           visibility: isPrivate ? 'PRIVATE' : 'PUBLIC',
-          metricType: 'CHECKIN',
+          metricType: 'DAILY_CHECKIN',
           inviteCode,
           creatorId: req.user.id,
         },
@@ -269,10 +270,17 @@ const deleteChallenge = async (req, res, next) => {
       });
     }
 
-    // Cascade delete challenge
+    // Cascade delete challenge in PostgreSQL
     await prisma.challenge.delete({
       where: { id: challengeId },
     });
+
+    // Clean up associated group chat messages in MongoDB (safely handles any connection delay)
+    try {
+      await Message.deleteMany({ challengeId });
+    } catch (mongoErr) {
+      console.warn(`⚠️ Note: Could not clean MongoDB messages for deleted challenge ${challengeId}:`, mongoErr.message);
+    }
 
     res.status(200).json({
       success: true,

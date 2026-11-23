@@ -11,10 +11,10 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:5000/api/health",
+          "raw": "http://localhost:5001/api/health",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "5000",
+          "port": "5001",
           "path": ["api", "health"]
         }
       }
@@ -31,7 +31,7 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Prince\",\n  \"email\": \"prince@primordial.dev\",\n  \"password\": \"password123\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/auth/register", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "register"] }
+            "url": { "raw": "http://localhost:5001/api/auth/register", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "auth", "register"] }
           }
         },
         {
@@ -43,7 +43,7 @@
               "mode": "raw",
               "raw": "{\n  \"email\": \"prince@primordial.dev\",\n  \"password\": \"password123\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "login"] }
+            "url": { "raw": "http://localhost:5001/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "auth", "login"] }
           }
         },
         {
@@ -51,7 +51,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/auth/me", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "me"] }
+            "url": { "raw": "http://localhost:5001/api/auth/me", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "auth", "me"] }
           }
         },
         {
@@ -59,7 +59,7 @@
           "request": {
             "method": "POST",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/auth/logout", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "auth", "logout"] }
+            "url": { "raw": "http://localhost:5001/api/auth/logout", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "auth", "logout"] }
           }
         }
       ]
@@ -72,7 +72,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/challenges", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges"] }
+            "url": { "raw": "http://localhost:5001/api/challenges", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges"] }
           }
         },
         {
@@ -84,7 +84,7 @@
               "mode": "raw",
               "raw": "{\n  \"title\": \"30 Days of Coding\",\n  \"description\": \"Daily algorithmic problem solving and web development.\",\n  \"duration\": 30,\n  \"visibility\": \"PUBLIC\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/challenges", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges"] }
+            "url": { "raw": "http://localhost:5001/api/challenges", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges"] }
           }
         },
         {
@@ -96,7 +96,7 @@
               "mode": "raw",
               "raw": "{\n  \"title\": \"7 Days of Early Waking\",\n  \"description\": \"Wake up at 6 AM every day.\",\n  \"duration\": 7,\n  \"visibility\": \"PRIVATE\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/challenges", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges"] }
+            "url": { "raw": "http://localhost:5001/api/challenges", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges"] }
           }
         },
         {
@@ -104,7 +104,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/challenges/1", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1"] }
           }
         },
         {
@@ -116,7 +116,7 @@
               "mode": "raw",
               "raw": "{\n  \"title\": \"30 Days of Modern Coding & DevOps\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/challenges/1", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1"] }
           }
         },
         {
@@ -124,7 +124,7 @@
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/challenges/1", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1"] }
           }
         }
       ]
@@ -137,7 +137,7 @@
           "request": {
             "method": "POST",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/challenges/1/join", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "join"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1/join", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1", "join"] }
           }
         },
         {
@@ -149,7 +149,7 @@
               "mode": "raw",
               "raw": "{\n  \"inviteCode\": \"EARLY6AM\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/challenges/join-private", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "join-private"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/join-private", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "join-private"] }
           }
         },
         {
@@ -157,7 +157,7 @@
           "request": {
             "method": "POST",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/challenges/1/leave", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "leave"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1/leave", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1", "leave"] }
           }
         },
         {
@@ -165,7 +165,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/challenges/1/members", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "members"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1/members", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1", "members"] }
           }
         },
         {
@@ -173,7 +173,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/users/me/challenges", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "users", "me", "challenges"] }
+            "url": { "raw": "http://localhost:5001/api/users/me/challenges", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "users", "me", "challenges"] }
           }
         }
       ]
@@ -190,7 +190,7 @@
               "mode": "raw",
               "raw": "{\n  \"note\": \"Completed 2 hours of React & Express practice today!\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/challenges/1/checkins", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "checkins"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1/checkins", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1", "checkins"] }
           }
         },
         {
@@ -198,7 +198,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/challenges/1/checkins", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "checkins"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1/checkins", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1", "checkins"] }
           }
         },
         {
@@ -206,7 +206,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/users/me/checkins", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "users", "me", "checkins"] }
+            "url": { "raw": "http://localhost:5001/api/users/me/checkins", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "users", "me", "checkins"] }
           }
         }
       ]
@@ -219,7 +219,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/challenges/1/leaderboard", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "leaderboard"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1/leaderboard", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1", "leaderboard"] }
           }
         }
       ]
@@ -232,7 +232,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/users/me/dashboard", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "users", "me", "dashboard"] }
+            "url": { "raw": "http://localhost:5001/api/users/me/dashboard", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "users", "me", "dashboard"] }
           }
         },
         {
@@ -240,7 +240,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/users/me/history", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "users", "me", "history"] }
+            "url": { "raw": "http://localhost:5001/api/users/me/history", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "users", "me", "history"] }
           }
         }
       ]
@@ -257,7 +257,7 @@
               "mode": "raw",
               "raw": "{\n  \"message\": \"Hey everyone! Ready for another consistent day!\"\n}"
             },
-            "url": { "raw": "http://localhost:5000/api/challenges/1/messages", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "messages"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1/messages", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1", "messages"] }
           }
         },
         {
@@ -265,7 +265,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/challenges/1/messages", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "challenges", "1", "messages"] }
+            "url": { "raw": "http://localhost:5001/api/challenges/1/messages", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "challenges", "1", "messages"] }
           }
         },
         {
@@ -273,7 +273,7 @@
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": { "raw": "http://localhost:5000/api/messages/REPLACE_WITH_MONGO_ID", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "messages", "REPLACE_WITH_MONGO_ID"] }
+            "url": { "raw": "http://localhost:5001/api/messages/REPLACE_WITH_MONGO_ID", "protocol": "http", "host": ["localhost"], "port": "5001", "path": ["api", "messages", "REPLACE_WITH_MONGO_ID"] }
           }
         }
       ]

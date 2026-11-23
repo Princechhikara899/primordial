@@ -94,6 +94,65 @@ const submitCheckIn = async (req, res, next) => {
 
     const streakStats = calculateStreaks(allUserCheckIns, challenge.duration, allUserFreezes);
 
+    // 7. Check and award milestone achievement badges
+    const milestones = [
+      {
+        type: 'FIRST_STEP',
+        condition: streakStats.totalCheckIns >= 1,
+        title: 'First Step',
+        description: 'Submitted your first daily check-in!',
+        icon: '🌱',
+      },
+      {
+        type: 'STREAK_3',
+        condition: streakStats.currentStreak >= 3,
+        title: 'Hat Trick',
+        description: 'Maintained a 3-day consistency streak!',
+        icon: '🔥',
+      },
+      {
+        type: 'STREAK_7',
+        condition: streakStats.currentStreak >= 7,
+        title: 'Week Warrior',
+        description: 'Maintained an unbroken 7-day streak!',
+        icon: '⚡',
+      },
+      {
+        type: 'STREAK_30',
+        condition: streakStats.currentStreak >= 30,
+        title: 'Unstoppable',
+        description: 'Achieved a full 30-day streak milestone!',
+        icon: '🏆',
+      },
+    ];
+
+    const newlyEarnedBadges = [];
+    for (const m of milestones) {
+      if (m.condition) {
+        try {
+          const badge = await prisma.badge.upsert({
+            where: {
+              userId_badgeType: {
+                userId: req.user.id,
+                badgeType: m.type,
+              },
+            },
+            update: {},
+            create: {
+              userId: req.user.id,
+              badgeType: m.type,
+              title: m.title,
+              description: m.description,
+              icon: m.icon,
+            },
+          });
+          newlyEarnedBadges.push(badge);
+        } catch {
+          // Ignore duplicate race
+        }
+      }
+    }
+
     res.status(201).json({
       success: true,
       message: 'Daily check-in submitted successfully! Keep the streak going!',
@@ -105,6 +164,7 @@ const submitCheckIn = async (req, res, next) => {
         createdAt: checkIn.createdAt,
       },
       updatedStreaks: streakStats,
+      earnedBadges: newlyEarnedBadges,
     });
   } catch (error) {
     next(error);
@@ -122,7 +182,7 @@ const useStreakFreeze = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid challenge ID' });
     }
 
-    const { date } = req.body; // e.g. "YYYY-MM-DD"
+    const { date, timezoneOffset } = req.body; // e.g. "YYYY-MM-DD", timezone offset in minutes
 
     // 1. Verify membership
     const membership = await prisma.membership.findUnique({
@@ -155,20 +215,38 @@ const useStreakFreeze = async (req, res, next) => {
       });
     }
 
-    // Determine target date to freeze: default to yesterday
-    let targetDateStr;
+    // Determine target date to freeze: default to yesterday (UTC)
     const todayStr = toDateString(new Date());
+    let targetDateStr;
 
     if (date) {
-      targetDateStr = toDateString(date);
+      targetDateStr = typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date.trim())
+        ? date.trim()
+        : toDateString(date);
     } else {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterday = new Date(Date.now() - 86400000);
       targetDateStr = toDateString(yesterday);
     }
 
-    // Cannot freeze today (today is still in progress) or future days
-    if (targetDateStr >= todayStr) {
+    // Handle timezone differences: determine the client's local today date if offset provided
+    const clientNow = (timezoneOffset !== undefined && !isNaN(parseInt(timezoneOffset, 10)))
+      ? new Date(Date.now() - (parseInt(timezoneOffset, 10) * 60000))
+      : new Date();
+    const clientTodayStr = toDateString(clientNow);
+
+    // Target date must be strictly in the past (before client's local day OR before UTC day)
+    const isPastInClientTime = targetDateStr < clientTodayStr;
+    const isPastInUtc = targetDateStr < todayStr;
+
+    if (!isPastInClientTime && !isPastInUtc) {
+      return res.status(400).json({
+        success: false,
+        message: 'You can only use a streak freeze on a past missed day, not today or future days.',
+      });
+    }
+
+    // Guard against future dates in both references
+    if (targetDateStr > clientTodayStr && targetDateStr > todayStr) {
       return res.status(400).json({
         success: false,
         message: 'You can only use a streak freeze on a past missed day, not today or future days.',
@@ -230,8 +308,18 @@ const useStreakFreeze = async (req, res, next) => {
       });
     }
 
-    // Atomic transaction: create streak freeze record AND decrement user inventory
+    // Atomic transaction: create streak freeze record AND decrement user inventory with balance check
     const result = await prisma.$transaction(async (tx) => {
+      // Re-check inventory inside transaction to prevent race conditions
+      const freshUser = await tx.user.findUnique({
+        where: { id: req.user.id },
+        select: { streakFreezes: true },
+      });
+
+      if (!freshUser || freshUser.streakFreezes <= 0) {
+        throw new Error('No streak freezes available. You have consumed all your freezes.');
+      }
+
       const freeze = await tx.streakFreeze.create({
         data: {
           userId: req.user.id,
@@ -286,6 +374,36 @@ const getStreakFreezes = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid challenge ID' });
     }
 
+    // 1. Verify challenge exists
+    const challenge = await prisma.challenge.findUnique({
+      where: { id: challengeId },
+      select: { id: true, visibility: true, creatorId: true },
+    });
+
+    if (!challenge) {
+      return res.status(404).json({ success: false, message: 'Challenge not found' });
+    }
+
+    // Authorization check for PRIVATE challenges
+    if (challenge.visibility === 'PRIVATE') {
+      const isCreator = challenge.creatorId === req.user.id;
+      const membership = await prisma.membership.findUnique({
+        where: {
+          userId_challengeId: {
+            userId: req.user.id,
+            challengeId,
+          },
+        },
+      });
+
+      if (!isCreator && !membership) {
+        return res.status(403).json({
+          success: false,
+          message: 'Forbidden. This is a private challenge. You must be an active member to view streak freezes.',
+        });
+      }
+    }
+
     const [freezes, user] = await Promise.all([
       prisma.streakFreeze.findMany({
         where: { userId: req.user.id, challengeId },
@@ -321,6 +439,36 @@ const getChallengeCheckIns = async (req, res, next) => {
     const challengeId = parseInt(req.params.id, 10);
     if (isNaN(challengeId)) {
       return res.status(400).json({ success: false, message: 'Invalid challenge ID' });
+    }
+
+    // 1. Verify challenge exists
+    const challenge = await prisma.challenge.findUnique({
+      where: { id: challengeId },
+      select: { id: true, visibility: true, creatorId: true },
+    });
+
+    if (!challenge) {
+      return res.status(404).json({ success: false, message: 'Challenge not found' });
+    }
+
+    // Authorization check for PRIVATE challenges
+    if (challenge.visibility === 'PRIVATE') {
+      const isCreator = challenge.creatorId === req.user.id;
+      const membership = await prisma.membership.findUnique({
+        where: {
+          userId_challengeId: {
+            userId: req.user.id,
+            challengeId,
+          },
+        },
+      });
+
+      if (!isCreator && !membership) {
+        return res.status(403).json({
+          success: false,
+          message: 'Forbidden. This is a private challenge. You must be an active member to view check-in logs.',
+        });
+      }
     }
 
     const checkIns = await prisma.checkIn.findMany({
@@ -382,29 +530,50 @@ const getUserCheckIns = async (req, res, next) => {
       }),
       prisma.streakFreeze.findMany({
         where: whereClause,
-        select: { challengeId: true, date: true },
+        include: {
+          challenge: {
+            select: { id: true, title: true, duration: true },
+          },
+        },
+        orderBy: { date: 'desc' },
       }),
     ]);
 
-    const frozenDateKeySet = new Set(
-      freezes.map((f) => `${f.challengeId}_${toDateString(f.date)}`)
-    );
-
-    const formatted = checkIns.map((c) => ({
-      id: c.id,
+    const formattedCheckIns = checkIns.map((c) => ({
+      id: `checkin_${c.id}`,
+      type: 'CHECKIN',
       challengeId: c.challengeId,
       challengeTitle: c.challenge.title,
       challengeDuration: c.challenge.duration,
       date: toDateString(c.date),
       note: c.note,
-      hasFreeze: frozenDateKeySet.has(`${c.challengeId}_${toDateString(c.date)}`),
+      isFreeze: false,
       createdAt: c.createdAt,
     }));
 
+    const formattedFreezes = freezes.map((f) => ({
+      id: `freeze_${f.id}`,
+      type: 'STREAK_FREEZE',
+      challengeId: f.challengeId,
+      challengeTitle: f.challenge.title,
+      challengeDuration: f.challenge.duration,
+      date: toDateString(f.date),
+      note: '❄️ Streak Freeze Protection Applied',
+      isFreeze: true,
+      createdAt: f.usedAt,
+    }));
+
+    // Combine and sort chronologically descending
+    const combined = [...formattedCheckIns, ...formattedFreezes].sort((a, b) => {
+      const dateCmp = b.date.localeCompare(a.date);
+      if (dateCmp !== 0) return dateCmp;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
     res.status(200).json({
       success: true,
-      count: formatted.length,
-      checkIns: formatted,
+      count: combined.length,
+      checkIns: combined,
     });
   } catch (error) {
     next(error);

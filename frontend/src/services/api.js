@@ -67,7 +67,14 @@ export const api = {
     }),
   getChallengeCheckIns: (challengeId) => request(`/challenges/${challengeId}/checkins`, { method: 'GET' }),
   getUserCheckIns: (challengeId) => request(`/users/me/checkins${challengeId ? `?challengeId=${challengeId}` : ''}`, { method: 'GET' }),
-  useStreakFreeze: (challengeId, date) => request(`/challenges/${challengeId}/streak-freeze`, { method: 'POST', body: { date } }),
+  useStreakFreeze: (challengeId, date) => 
+    request(`/challenges/${challengeId}/streak-freeze`, { 
+      method: 'POST', 
+      body: { 
+        date, 
+        timezoneOffset: new Date().getTimezoneOffset() 
+      } 
+    }),
   getStreakFreezes: (challengeId) => request(`/challenges/${challengeId}/streak-freeze`, { method: 'GET' }),
 
   // Leaderboard
@@ -76,6 +83,7 @@ export const api = {
   // Dashboard & History
   getDashboardStats: () => request('/users/me/dashboard', { method: 'GET' }),
   getUserHistory: () => request('/users/me/history', { method: 'GET' }),
+  getUserBadges: () => request('/users/me/badges', { method: 'GET' }),
 
   // Group Chat (MongoDB)
   getMessages: (challengeId) => request(`/challenges/${challengeId}/messages`, { method: 'GET' }),

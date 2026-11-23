@@ -32,6 +32,20 @@ export function AuthProvider({ children }) {
     checkAuth();
   }, []);
 
+  // Silently refresh current user data without triggering full-screen loading spinner
+  const refreshUser = async () => {
+    try {
+      const res = await api.getMe();
+      if (res.success && res.user) {
+        setUser(res.user);
+        return res.user;
+      }
+    } catch {
+      // Ignore background refresh errors
+    }
+    return null;
+  };
+
   const login = async (email, password) => {
     const res = await api.login({ email, password });
     if (res.success && res.user) {
@@ -60,11 +74,13 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         loading,
         login,
         register,
         logout,
         checkAuth,
+        refreshUser,
         isAuthenticated: Boolean(user),
       }}
     >

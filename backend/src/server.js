@@ -4,6 +4,7 @@
 require('dotenv').config();
 
 const http = require('http');
+const mongoose = require('mongoose');
 const app = require('./app');
 const prisma = require('./config/prisma');
 const connectMongoDB = require('./config/mongodb');
@@ -52,6 +53,14 @@ async function startServer() {
       server.close(async () => {
         await prisma.$disconnect();
         console.log('🔌 PostgreSQL Prisma disconnected.');
+        try {
+          if (mongoose.connection.readyState !== 0) {
+            await mongoose.disconnect();
+            console.log('🔌 MongoDB connection closed.');
+          }
+        } catch {
+          // ignore disconnect error on exit
+        }
         process.exit(0);
       });
     };

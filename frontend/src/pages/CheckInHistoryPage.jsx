@@ -3,11 +3,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { Calendar, CheckCircle2, Filter, Info } from 'lucide-react';
+import { Calendar, CheckCircle2, Filter, Info, Snowflake } from 'lucide-react';
 
 export default function CheckInHistoryPage() {
   const [checkIns, setCheckIns] = useState([]);
   const [challenges, setChallenges] = useState([]);
+  const [historySummaries, setHistorySummaries] = useState([]);
   const [selectedChallengeId, setSelectedChallengeId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -15,9 +16,10 @@ export default function CheckInHistoryPage() {
   const fetchData = async (challengeId = '') => {
     try {
       setLoading(true);
-      const [checkInsRes, joinedRes] = await Promise.all([
+      const [checkInsRes, joinedRes, historyRes] = await Promise.all([
         api.getUserCheckIns(challengeId),
         api.getUserJoinedChallenges(),
+        api.getUserHistory(),
       ]);
 
       if (checkInsRes.success) {
@@ -25,6 +27,9 @@ export default function CheckInHistoryPage() {
       }
       if (joinedRes.success) {
         setChallenges(joinedRes.challenges || []);
+      }
+      if (historyRes.success) {
+        setHistorySummaries(historyRes.history || []);
       }
     } catch (err) {
       setError(err.message || 'Failed to load check-in history.');
@@ -99,10 +104,14 @@ export default function CheckInHistoryPage() {
             </thead>
             <tbody>
               {checkIns.map((item) => (
-                <tr key={item.id}>
+                <tr key={item.id} className={item.isFreeze ? 'row-freeze' : ''}>
                   <td className="font-semibold text-primary">
                     <div className="table-date-cell">
-                      <CheckCircle2 size={16} className="text-green" />
+                      {item.isFreeze ? (
+                        <Snowflake size={16} className="text-blue" />
+                      ) : (
+                        <CheckCircle2 size={16} className="text-green" />
+                      )}
                       <span>{item.date}</span>
                     </div>
                   </td>
@@ -113,7 +122,13 @@ export default function CheckInHistoryPage() {
                     <span className="badge-duration">{item.challengeDuration} Days</span>
                   </td>
                   <td className="note-cell">
-                    {item.note ? item.note : <span className="text-muted">No note attached</span>}
+                    {item.isFreeze ? (
+                      <span className="text-blue font-medium">{item.note}</span>
+                    ) : item.note ? (
+                      item.note
+                    ) : (
+                      <span className="text-muted">No note attached</span>
+                    )}
                   </td>
                   <td className="text-muted text-sm">
                     {item.createdAt ? new Date(item.createdAt).toLocaleString() : '—'}

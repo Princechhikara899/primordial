@@ -195,6 +195,36 @@ const getChallengeMembers = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid challenge ID' });
     }
 
+    // 1. Verify challenge exists
+    const challenge = await prisma.challenge.findUnique({
+      where: { id: challengeId },
+      select: { id: true, visibility: true, creatorId: true },
+    });
+
+    if (!challenge) {
+      return res.status(404).json({ success: false, message: 'Challenge not found' });
+    }
+
+    // Authorization check for PRIVATE challenges
+    if (challenge.visibility === 'PRIVATE') {
+      const isCreator = challenge.creatorId === req.user.id;
+      const membership = await prisma.membership.findUnique({
+        where: {
+          userId_challengeId: {
+            userId: req.user.id,
+            challengeId,
+          },
+        },
+      });
+
+      if (!isCreator && !membership) {
+        return res.status(403).json({
+          success: false,
+          message: 'Forbidden. This is a private challenge. You must be an active member to view the member roster.',
+        });
+      }
+    }
+
     const members = await prisma.membership.findMany({
       where: { challengeId },
       include: {

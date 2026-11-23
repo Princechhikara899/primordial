@@ -42,6 +42,22 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
+  // CORS error handling
+  if (err.message && err.message.startsWith('CORS policy does not allow access')) {
+    return res.status(403).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  // Mongoose CastError (e.g. invalid ObjectId format)
+  if (err.name === 'CastError') {
+    return res.status(400).json({
+      success: false,
+      message: `Invalid format for field ${err.path || 'identifier'}.`,
+    });
+  }
+
   // Mongoose validation error
   if (err.name === 'ValidationError') {
     return res.status(400).json({

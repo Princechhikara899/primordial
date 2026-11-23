@@ -115,24 +115,35 @@ const login = async (req, res, next) => {
  */
 const logout = (req, res, next) => {
   try {
+    const clearOptions = {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    };
+
     // Destroy the server-side session
-    req.session.destroy((err) => {
-      if (err) {
-        return next(err);
-      }
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          return next(err);
+        }
 
-      // Clear the session cookie from the browser
-      res.clearCookie('primordial.sid', {
-        path: '/',
-        httpOnly: true,
-        sameSite: 'lax',
+        // Clear the session cookie from the browser
+        res.clearCookie('primordial.sid', clearOptions);
+
+        return res.status(200).json({
+          success: true,
+          message: 'Logged out successfully.',
+        });
       });
-
-      res.status(200).json({
+    } else {
+      res.clearCookie('primordial.sid', clearOptions);
+      return res.status(200).json({
         success: true,
         message: 'Logged out successfully.',
       });
-    });
+    }
   } catch (error) {
     next(error);
   }

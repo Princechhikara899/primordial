@@ -327,6 +327,48 @@ async function seed() {
     console.warn('⚠️ MongoDB chat seeding note:', err.message);
   }
 
+  // Seed realistic demo achievement badges
+  await prisma.badge.createMany({
+    data: [
+      {
+        userId: alex.id,
+        badgeType: 'FIRST_STEP',
+        title: 'First Step',
+        description: 'Submitted your first daily check-in!',
+        icon: '🌱',
+      },
+      {
+        userId: alex.id,
+        badgeType: 'STREAK_3',
+        title: 'Hat Trick',
+        description: 'Maintained a 3-day consistency streak!',
+        icon: '🔥',
+      },
+      {
+        userId: alex.id,
+        badgeType: 'STREAK_7',
+        title: 'Week Warrior',
+        description: 'Maintained an unbroken 7-day streak!',
+        icon: '⚡',
+      },
+      {
+        userId: sarah.id,
+        badgeType: 'FIRST_STEP',
+        title: 'First Step',
+        description: 'Submitted your first daily check-in!',
+        icon: '🌱',
+      },
+      {
+        userId: david.id,
+        badgeType: 'FIRST_STEP',
+        title: 'First Step',
+        description: 'Submitted your first daily check-in!',
+        icon: '🌱',
+      },
+    ],
+  });
+  console.log('✅ Seeded demo milestone badges');
+
   console.log('\n🎉 PRIMORDIAL DATABASE SEEDING COMPLETED SUCCESSFULLY!');
   console.log('----------------------------------------------------');
   console.log('Demo Accounts (All password: password123):');

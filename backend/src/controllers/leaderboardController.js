@@ -19,11 +19,31 @@ const getChallengeLeaderboard = async (req, res, next) => {
     // 1. Verify challenge exists
     const challenge = await prisma.challenge.findUnique({
       where: { id: challengeId },
-      select: { id: true, title: true, duration: true, visibility: true },
+      select: { id: true, title: true, duration: true, visibility: true, creatorId: true },
     });
 
     if (!challenge) {
       return res.status(404).json({ success: false, message: 'Challenge not found' });
+    }
+
+    // Authorization check for PRIVATE challenges
+    if (challenge.visibility === 'PRIVATE') {
+      const isCreator = challenge.creatorId === req.user.id;
+      const membership = await prisma.membership.findUnique({
+        where: {
+          userId_challengeId: {
+            userId: req.user.id,
+            challengeId,
+          },
+        },
+      });
+
+      if (!isCreator && !membership) {
+        return res.status(403).json({
+          success: false,
+          message: 'Forbidden. This is a private challenge. You must be an active member to view the leaderboard.',
+        });
+      }
     }
 
     // 2. Execute SQL query with aggregation and window function (DENSE_RANK)

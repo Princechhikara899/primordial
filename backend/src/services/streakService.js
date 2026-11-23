@@ -96,8 +96,9 @@ function calculateStreaks(checkIns = [], duration = 30, streakFreezes = []) {
 
   let currentStreak = 0;
 
-  // Streak is alive if the most recent active or frozen day was TODAY (0) or YESTERDAY (1)
-  if (daysSinceLastActive === 0 || daysSinceLastActive === 1) {
+  // Streak is alive if the most recent active or frozen day was TODAY (0), YESTERDAY (1),
+  // or slightly ahead due to local timezone day rollover (<= 1)
+  if (daysSinceLastActive <= 1) {
     currentStreak = 1;
     // Walk backwards counting consecutive days
     for (let i = sortedDates.length - 1; i > 0; i--) {

@@ -195,7 +195,29 @@ const getUserHistory = async (req, res, next) => {
   }
 };
 
+/**
+ * Get achievements & earned badges for the logged-in user
+ * Method: GET /api/users/me/badges
+ */
+const getUserBadges = async (req, res, next) => {
+  try {
+    const badges = await prisma.badge.findMany({
+      where: { userId: req.user.id },
+      orderBy: { earnedAt: 'desc' },
+    });
+
+    res.status(200).json({
+      success: true,
+      count: badges.length,
+      badges,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getUserHistory,
+  getUserBadges,
 };
